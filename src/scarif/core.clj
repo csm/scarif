@@ -22,7 +22,6 @@
 (defn ^:no-doc change-listener
   [v prop-ref cb]
   (fn []
-    (println "change-listener firing" v prop-ref cb)
     (let [^DynamicStringProperty prop @prop-ref
           old-value @v
           new-value (edn/read-string (.getValue prop))]
