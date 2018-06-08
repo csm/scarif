@@ -1,8 +1,17 @@
 # scarif
 
+[![Build Status](https://travis-ci.org/csm/scarif.svg?branch=master)](https://travis-ci.org/csm/scarif)
+[![Clojars Project](https://img.shields.io/clojars/v/com.github.csm/scarif.svg)](https://clojars.org/com.github.csm/scarif)
+
 A configuration library for Clojure building on [Archaius](https://github.com/Netflix/archaius).
 
 ## Usage
+
+```clojure
+[com.github.csm/scarif "0.1.1"]]
+```
+
+[API Documentation](https://csm.github.io/scarif/)
 
 ```clojure
 (ns my-ns
