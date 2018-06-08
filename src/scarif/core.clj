@@ -3,13 +3,13 @@
             [clojure.edn :as edn])
   (:import [com.netflix.config DynamicPropertyFactory DynamicStringProperty]))
 
-(defn var-symbol
+(defn- var-symbol
   "Returns the namespace-qualified symbol for the var."
   [v]
   (symbol (-> v meta :ns ns-name name)
           (-> v meta :name name)))
 
-(defn set-value!
+(defn- set-value!
   [v prop-ref]
   (let [^DynamicStringProperty prop @prop-ref
         new-value (edn/read-string (.getValue prop))]
@@ -18,7 +18,7 @@
         (throw (ex-info (str "value for" (.getName prop) "did not conform to spec") {:explain-data result}))))
     (alter-var-root v (constantly new-value))))
 
-(defn change-listener
+(defn- change-listener
   [v prop-ref cb]
   (fn []
     (println "change-listener firing" v prop-ref cb)
