@@ -1,4 +1,4 @@
-(defproject com.github.csm/scarif "0.1.2-SNAPSHOT"
+(defproject com.github.csm/scarif "0.1.2"
   :description "Dynamic configuration library"
   :url "https://github.com/csm/scarif"
   :license {:name "Eclipse Public License"
