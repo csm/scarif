@@ -5,9 +5,10 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [com.netflix.archaius/archaius-core "0.7.4"]
-                 [com.netflix.archaius/archaius-aws "0.7.4"]]
-  :profiles {:dev {:dependencies [[ch.qos.logback/logback-classic "1.1.7"]]
-                   :resource-paths ["dev_resources"]}}
+                 [com.netflix.archaius/archaius-aws "0.7.4" :exclusions [commons-logging joda-time]]
+                 [joda-time "2.10"]]
+  :profiles {:devel {:dependencies [[ch.qos.logback/logback-classic "1.1.7"]]
+                     :resource-paths ["dev_resources"]}}
   :plugins [[lein-codox "0.10.3"]]
   :codox {:output-path "docs"}
   :release-tasks [["vcs" "assert-committed"]

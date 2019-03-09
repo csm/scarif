@@ -12,12 +12,14 @@
 (defn ^:no-doc set-value!
   [v prop-ref]
   (let [^DynamicStringProperty prop @prop-ref
-        new-value (edn/read-string (.getValue prop))]
-    (when-let [spec (s/get-spec (keyword (.getName prop)))]
-      (when-let [result (s/explain-data spec new-value)]
-        (throw (ex-info (str "value for " (.getName prop) " did not conform to spec: " (s/explain spec new-value))
-                        {:explain-data result}))))
-    (alter-var-root v (constantly new-value))))
+        new-str (.getValue prop)]
+    (when (some? new-str)
+      (let [new-value (edn/read-string new-str)]
+        (when-let [spec (s/get-spec (keyword (.getName prop)))]
+          (when-let [result (s/explain-data spec new-value)]
+            (throw (ex-info (str "value for " (.getName prop) " did not conform to spec: " (s/explain spec new-value))
+                            {:explain-data result}))))
+        (alter-var-root v (constantly new-value))))))
 
 (defn ^:no-doc change-listener
   [v prop-ref cb]
