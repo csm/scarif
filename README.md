@@ -8,7 +8,7 @@ A configuration library for Clojure building on [Archaius](https://github.com/Ne
 ## Usage
 
 ```clojure
-[com.github.csm/scarif "0.1.3"]
+[com.github.csm/scarif "0.1.5"]
 ```
 
 [API Documentation](https://csm.github.io/scarif/)
