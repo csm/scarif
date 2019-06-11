@@ -11,6 +11,7 @@
                      :resource-paths ["dev_resources"]}}
   :plugins [[lein-codox "0.10.3"]]
   :codox {:output-path "docs"}
+  :java-source-paths ["javasrc"]
   :release-tasks [["vcs" "assert-committed"]
                   ["change" "version"
                    "leiningen.release/bump-version" "release"]

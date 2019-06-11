@@ -1,7 +1,8 @@
 (ns scarif.testing
   "Utilities for using scarif in unit tests."
   (:import [com.netflix.config PolledConfigurationSource PollResult FixedDelayPollingScheduler DynamicConfiguration ConcurrentCompositeConfiguration DynamicURLConfiguration ConfigurationManager]
-           [org.apache.commons.configuration SystemConfiguration EnvironmentConfiguration]))
+           [org.apache.commons.configuration SystemConfiguration EnvironmentConfiguration]
+           [scarif TriggerableFixedDelayPollingScheduler]))
 
 (defn deref-configuration-source
   "Returns a PolledConfigurationSource that will expect to read
@@ -29,14 +30,17 @@
   poll-frequency -- frequency to poll your configuration source in milliseconds (default 1000).
   url-configuration? -- boolean, to use a DynamicURLConfiguration (true)
   system-configuration? -- boolean, to use a SystemConfiguration (true)
-  env-configuration? -- boolean, to use a EnvironmentConfiguration (true)"
+  env-configuration? -- boolean, to use a EnvironmentConfiguration (true)
+
+  Returns the scheduler for the dynamic configuration, which is extended
+  with a triggerNow method, to trigger polling early."
   [derefable & {:keys [poll-frequency url-configuration? system-configuration? env-configuration?]
                 :or {poll-frequency 1000
                      url-configuration? true
                      system-configuration? true
                      env-configuration? true}}]
   (let [source (deref-configuration-source derefable)
-        scheduler (FixedDelayPollingScheduler. 0 poll-frequency false)
+        scheduler (TriggerableFixedDelayPollingScheduler. 0 poll-frequency false)
         dyn-config (DynamicConfiguration. source scheduler)
         final-config (ConcurrentCompositeConfiguration.)]
     (.addConfiguration ^ConcurrentCompositeConfiguration final-config dyn-config "deref")
@@ -48,4 +52,5 @@
       (.addConfiguration final-config (EnvironmentConfiguration.) "env"))
     (if (ConfigurationManager/isConfigurationInstalled)
       (ConfigurationManager/loadPropertiesFromConfiguration final-config)
-      (ConfigurationManager/install final-config))))
+      (ConfigurationManager/install final-config))
+    scheduler))
