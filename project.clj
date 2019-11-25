@@ -9,13 +9,11 @@
                  [joda-time "2.10"]]
   :profiles {:devel {:dependencies [[ch.qos.logback/logback-classic "1.1.7"]]
                      :resource-paths ["dev_resources"]}}
-  :plugins [[lein-codox "0.10.3"]]
   :codox {:output-path "docs"}
   :java-source-paths ["javasrc"]
   :release-tasks [["vcs" "assert-committed"]
                   ["change" "version"
                    "leiningen.release/bump-version" "release"]
-                  ["codox"]
                   ["vcs" "commit"]
                   ["vcs" "tag"]
                   ["deploy" "clojars"]
