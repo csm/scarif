@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/csm/scarif.svg?branch=master)](https://travis-ci.org/csm/scarif)
 [![Clojars Project](https://img.shields.io/clojars/v/com.github.csm/scarif.svg)](https://clojars.org/com.github.csm/scarif)
+[![cljdoc badge](https://cljdoc.org/badge/com.github.csm/scarif)](https://cljdoc.org/d/com.github.csm/scarif/CURRENT)
 
 A configuration library for Clojure building on [Archaius](https://github.com/Netflix/archaius).
 
@@ -42,7 +43,7 @@ A configuration library for Clojure building on [Archaius](https://github.com/Ne
 
 ## License
 
-Copyright © 2018 Casey Marshall
+Copyright © 2018, 2019 Casey Marshall
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
