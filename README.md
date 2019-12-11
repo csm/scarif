@@ -9,7 +9,7 @@ A configuration library for Clojure building on [Archaius](https://github.com/Ne
 ## Usage
 
 ```clojure
-[com.github.csm/scarif "0.1.8"]
+[com.github.csm/scarif "0.1.9"]
 ```
 
 [API Documentation](https://csm.github.io/scarif/)
