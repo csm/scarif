@@ -4,13 +4,13 @@
            [org.apache.commons.configuration SystemConfiguration EnvironmentConfiguration]
            [scarif TriggerableFixedDelayPollingScheduler]))
 
-(defn deref-configuration-source
-  "Returns a PolledConfigurationSource that will expect to read
-  a map by deref'ing the argument."
-  [derefable]
+(defn fn-configuration-source
+  "Returns a PolledConfigurationSource that will fetch a map
+  by calling a 0-arg function."
+  [f]
   (reify PolledConfigurationSource
     (poll [_this _initial _checkpoint]
-      (let [result (->> @derefable
+      (let [result (->> (f)
                         (map (fn [[k v]] [(cond
                                             (string? k)  k
                                             (keyword? k) (.substring (str k) 1)
@@ -18,6 +18,15 @@
                                           v]))
                         (into {}))]
         (PollResult/createFull result)))))
+
+(defn deref-configuration-source
+  "Returns a PolledConfigurationSource that will expect to read
+  a map by deref'ing the argument."
+  [derefable]
+  (fn-configuration-source (fn [] (deref derefable))))
+
+(def config-ref (ref nil))
+(def scheduler-ref (ref nil))
 
 (defn init!
   "Initialize Archaius to use a deref'able configuration source.
@@ -39,18 +48,23 @@
                      url-configuration? true
                      system-configuration? true
                      env-configuration? true}}]
-  (let [source (deref-configuration-source derefable)
-        scheduler (TriggerableFixedDelayPollingScheduler. 0 poll-frequency false)
-        dyn-config (DynamicConfiguration. source scheduler)
-        final-config (ConcurrentCompositeConfiguration.)]
-    (.addConfiguration ^ConcurrentCompositeConfiguration final-config dyn-config "deref")
-    (when url-configuration?
-      (.addConfiguration final-config (DynamicURLConfiguration.) "url"))
-    (when system-configuration?
-      (.addConfiguration final-config (SystemConfiguration.) "system"))
-    (when env-configuration?
-      (.addConfiguration final-config (EnvironmentConfiguration.) "env"))
-    (if (ConfigurationManager/isConfigurationInstalled)
-      (ConfigurationManager/loadPropertiesFromConfiguration final-config)
-      (ConfigurationManager/install final-config))
-    scheduler))
+  (dosync
+    (ref-set config-ref derefable)
+    (if-let [sched @scheduler-ref]
+      sched
+      (let [source (fn-configuration-source (fn [] (deref (deref config-ref))))
+            scheduler (TriggerableFixedDelayPollingScheduler. 0 poll-frequency false)
+            dyn-config (DynamicConfiguration. source scheduler)
+            final-config (ConcurrentCompositeConfiguration.)]
+        (.addConfiguration ^ConcurrentCompositeConfiguration final-config dyn-config "deref")
+        (when url-configuration?
+          (.addConfiguration final-config (DynamicURLConfiguration.) "url"))
+        (when system-configuration?
+          (.addConfiguration final-config (SystemConfiguration.) "system"))
+        (when env-configuration?
+          (.addConfiguration final-config (EnvironmentConfiguration.) "env"))
+        (if (ConfigurationManager/isConfigurationInstalled)
+          (ConfigurationManager/loadPropertiesFromConfiguration final-config)
+          (ConfigurationManager/install final-config))
+        (ref-set scheduler-ref scheduler)
+        scheduler))))
